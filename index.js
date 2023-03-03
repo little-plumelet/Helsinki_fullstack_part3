@@ -1,5 +1,5 @@
-const { request, response } = require("express");
 const express = require("express");
+const morgan = require("morgan");
 
 let data = [
   {
@@ -27,6 +27,8 @@ let data = [
 const personsNumber = data.length;
 
 const app = express();
+
+app.use(morgan('tiny', ':method :url :status :res[content-length] - :response-time ms'));
 
 app.use(express.json());
 
