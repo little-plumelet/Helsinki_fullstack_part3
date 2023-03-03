@@ -1,5 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
+
+const app = express();
 
 let data = [
   {
@@ -26,12 +29,8 @@ let data = [
 
 const personsNumber = data.length;
 
-const app = express();
-
 const format =
   ":method :url :status :res[content-length] - :response-time ms :req-body";
-
-app.use(morgan(format));
 
 morgan.token("req-body", (req, res) => {
   if (req.method === "POST") {
@@ -40,7 +39,9 @@ morgan.token("req-body", (req, res) => {
   return "";
 });
 
+app.use(cors())
 app.use(express.json());
+app.use(morgan(format));
 
 app.get("/api/persons", (_, response) => {
   response.json(data);
