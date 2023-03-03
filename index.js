@@ -28,7 +28,17 @@ const personsNumber = data.length;
 
 const app = express();
 
-app.use(morgan('tiny', ':method :url :status :res[content-length] - :response-time ms'));
+const format =
+  ":method :url :status :res[content-length] - :response-time ms :req-body";
+
+app.use(morgan(format));
+
+morgan.token("req-body", (req, res) => {
+  if (req.method === "POST") {
+    return JSON.stringify(req.body);
+  }
+  return "";
+});
 
 app.use(express.json());
 
@@ -40,11 +50,10 @@ app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = data.find((person) => person.id === id);
   if (person) response.json(person);
-  response.status(404).end()
+  response.status(404).end();
 });
 
 app.post("/api/persons", (request, response) => {
-  
   let id;
   while (!id) {
     const tmpId = Math.floor(Math.random() * 100) + 1;
@@ -52,35 +61,35 @@ app.post("/api/persons", (request, response) => {
   }
   if (!request.body.name) {
     return response.status(400).json({
-      error: 'name is missing'
-    })
+      error: "name is missing",
+    });
   }
 
   if (!request.body.phone) {
     return response.status(400).json({
-      error: 'phone number is missing'
-    })
+      error: "phone number is missing",
+    });
   }
 
   if (data.find((person) => request.body.name === person.name)) {
     return response.status(400).json({
-      error: 'name must be unique'
-    })
+      error: "name must be unique",
+    });
   }
 
   const person = {
     id,
-    ...request.body
-  }
+    ...request.body,
+  };
   data = [...data, person];
   response.json(person);
-})
+});
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   data = data.filter((person) => person.id !== id);
   response.status(204).end();
-})
+});
 
 app.get("/info", (_, response) => {
   const date = new Date().toUTCString();
