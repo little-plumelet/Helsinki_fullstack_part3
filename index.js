@@ -27,11 +27,18 @@ const personsNumber = data.length;
 
 const app = express();
 
-app.get("/api/persons", (request, response) => {
+app.get("/api/persons", (_, response) => {
   response.json(data);
 });
 
-app.get("/info", (request, response) => {
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const person = data.find((person) => person.id === id);
+  if (person) response.json(person);
+  response.status(404).end()
+});
+
+app.get("/info", (_, response) => {
   const date = new Date().toUTCString();
   response.send(`
       <div>
