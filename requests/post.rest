@@ -5,3 +5,31 @@ content-type: application/json
     "name": "Jeremi Clarck",
     "phone": "8-756-567-33-22"
 }
+
+###
+// bad request - no phone
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "Jeremi Clarck"
+}
+
+###
+// bad request - no name
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "phone": "8-756-567-33-22"
+}
+
+###
+// bad request - not unique name
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "Jeremi Clarck",
+    "phone": "8-756-567-33-22"
+}

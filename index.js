@@ -46,9 +46,26 @@ app.post("/api/persons", (request, response) => {
   let id;
   while (!id) {
     const tmpId = Math.floor(Math.random() * 100) + 1;
-    console.log(tmpId)
     if (!data.find((person) => person.id === tmpId)) id = tmpId;
   }
+  if (!request.body.name) {
+    return response.status(400).json({
+      error: 'name is missing'
+    })
+  }
+
+  if (!request.body.phone) {
+    return response.status(400).json({
+      error: 'phone number is missing'
+    })
+  }
+
+  if (data.find((person) => request.body.name === person.name)) {
+    return response.status(400).json({
+      error: 'name must be unique'
+    })
+  }
+
   const person = {
     id,
     ...request.body
