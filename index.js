@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const ObjectId = require('mongodb').ObjectId; 
 
 const app = express();
 
@@ -52,7 +53,7 @@ const personSchema = new mongoose.Schema({
 });
 
 personSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
+  transform: (_, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
@@ -75,10 +76,16 @@ app.get("/api/persons", (_, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = data.find((person) => person.id === id);
-  if (person) response.json(person);
-  response.status(404).end();
+  const id = request.params.id;
+  Person
+    .find({
+      "_id": new ObjectId(id)
+    })
+    .then((person) => {
+      response.json(person);
+      mongoose.connection.close();
+    })
+    // TODO error handling - response.status(404).end();
 });
 
 app.post("/api/persons", (request, response) => {
