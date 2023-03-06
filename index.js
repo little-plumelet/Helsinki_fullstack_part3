@@ -41,6 +41,7 @@ morgan.token("req-body", (req, res) => {
 
 app.use(cors())
 app.use(express.json());
+app.use(express.static('build'));
 app.use(morgan(format));
 
 app.get("/api/persons", (_, response) => {
