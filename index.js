@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -29,6 +30,9 @@ let data = [
 
 const personsNumber = data.length;
 
+const PASSWORD = process.env.PASSWORD_MONGODB;
+const url = `mongodb+srv://little-plumelet:${PASSWORD}@helsinkifullstackphoneb.neloksj.mongodb.net/Phonebook?retryWrites=true&w=majority`;
+
 const format =
   ":method :url :status :res[content-length] - :response-time ms :req-body";
 
@@ -39,13 +43,35 @@ morgan.token("req-body", (req, res) => {
   return "";
 });
 
+mongoose.set('strictQuery',false)
+mongoose.connect(url);
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  phone: String,
+});
+
+personSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
+const Person = mongoose.model("Person", personSchema);
+
 app.use(cors())
 app.use(express.json());
 app.use(express.static('build'));
 app.use(morgan(format));
 
 app.get("/api/persons", (_, response) => {
-  response.json(data);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+    mongoose.connection.close();
+  });
+  
 });
 
 app.get("/api/persons/:id", (request, response) => {
