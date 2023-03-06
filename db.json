@@ -1,0 +1,34 @@
+{
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "phone": "+7-555-55-55",
+      "id": 1
+    },
+    {
+      "name": "Ada Lovelace",
+      "phone": "+6-333-33-33",
+      "id": 2
+    },
+    {
+      "name": "Dan Abramov",
+      "phone": "12-43-234345",
+      "id": 3
+    },
+    {
+      "name": "Mary Poppendieck",
+      "phone": "39-23-6423122",
+      "id": 4
+    },
+    {
+      "name": "Jim Kerri",
+      "phone": "+9-666-77-44",
+      "id": 5
+    },
+    {
+      "name": "Robert Gall",
+      "phone": "+2-345-34-34",
+      "id": 7
+    }
+  ]
+}
