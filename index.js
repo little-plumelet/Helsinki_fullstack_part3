@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const ObjectId = require('mongodb').ObjectId; 
+// const ObjectId = require('mongodb').ObjectId; 
 
 const app = express();
 
@@ -78,7 +78,7 @@ app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
   Person
     .find({
-      "_id": new ObjectId(id)
+      _id: id
     })
     .then((person) => {
       response.json(person);
@@ -111,7 +111,6 @@ app.post("/api/persons", (request, response) => {
   });
 
   person.save().then((person) => {
-    console.log(`added ${person.name} number ${person.phone} to phonebook`);
     response.json(person);
   });
 });
@@ -121,10 +120,9 @@ app.delete("/api/persons/:id", (request, response) => {
   
   Person
     .deleteOne({
-      _id: ObjectId(id)
+      _id: id
     })
-    .then((person) => {
-      console.log('DELETED', person);
+    .then(() => {
       response.status(204).end();
     })
 });
