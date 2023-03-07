@@ -30,12 +30,22 @@ app.get("/api/persons", (_, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  Person.find({
+  Person
+  .find({
     _id: id,
-  }).then((person) => {
-    response.json(person);
-  });
-  // TODO error handling - response.status(404).end();
+  })
+  .then((person) => {
+    console.log('person = ', person)
+    if (person.name) {
+      response.json(person);
+    } else {
+      response.status(404).end();
+    }
+  })
+  .catch((err) => {
+    console.log('err =', err);
+    response.status(400).send({error: 'malformatted id'});
+  })
 });
 
 app.post("/api/persons", (request, response) => {
