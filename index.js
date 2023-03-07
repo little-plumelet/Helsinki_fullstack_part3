@@ -37,8 +37,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     _id: id,
   })
     .then((person) => {
-      console.log("person = ", person);
-      if (person.name) {
+      if (person.length) {
         response.json(person);
       } else {
         response.status(404).end();
@@ -73,7 +72,7 @@ app.post("/api/persons", (request, response, next) => {
     .then((person) => {
       response.json(person);
     })
-    .catch(err => next(err))
+    .catch((err) => next(err));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -100,17 +99,23 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((err) => next(err));
 });
 
-// app.get("/info", (_, response) => {
-//   const date = new Date().toUTCString();
-//   response.send(`
-//       <div>
-//         Phonebook has info for ${personsNumber} people
-//       </div>
-//       <div>
-//         ${date}
-//       </div>
-//   `);
-// });
+app.get("/info", (_, response) => {
+  const date = new Date().toUTCString();
+
+  Person.find({})
+    .then((persons) => {
+      const personsNumber = persons.length;
+      response.send(` 
+        <div>
+          Phonebook has info for ${personsNumber} people
+        </div>
+        <div>
+          ${date}
+        </div>
+      `);
+    })
+    .catch((err) => next(err));
+});
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
