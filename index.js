@@ -4,7 +4,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 // Person's import must be after donenv, thus env variables would be avaliable
 const Person = require("./models/person");
-const e = require("express");
 
 const app = express();
 
@@ -81,7 +80,7 @@ app.put("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndUpdate(
     { _id: id },
     { phone: request.body.phone },
-    { new: true }
+    { new: true, runValidators: true, context: 'query'},
   )
     .then((person) => response.json(person))
     .catch((err) => next(err));
@@ -126,6 +125,8 @@ app.use(unknownEndpoint);
 const errorHandler = (error, request, response, next) => {
   if (error.name === "CastError") {
     response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   } else next(error);
 };
 
