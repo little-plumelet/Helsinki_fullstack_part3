@@ -24,12 +24,11 @@ app.use(express.static("build"));
 app.use(morgan(format));
 
 app.get("/api/persons", (_, response, next) => {
-  Person
-    .find({})
+  Person.find({})
     .then((persons) => {
       response.json(persons);
     })
-    .catch(err => next(err));
+    .catch((err) => next(err));
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -64,12 +63,6 @@ app.post("/api/persons", (request, response, next) => {
     });
   }
 
-  if (data.find((person) => request.body.name === person.name)) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
-
   const person = new Person({
     name: request.body.name,
     phone: request.body.phone,
@@ -83,17 +76,28 @@ app.post("/api/persons", (request, response, next) => {
     .catch(err => next(err))
 });
 
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+
+  Person.findByIdAndUpdate(
+    { _id: id },
+    { phone: request.body.phone },
+    { new: true }
+  )
+    .then((person) => response.json(person))
+    .catch((err) => next(err));
+});
+
 app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
 
-  Person
-    .deleteOne({
-      _id: id,
-    })
+  Person.deleteOne({
+    _id: id,
+  })
     .then(() => {
       response.status(204).end();
     })
-    .catch(err => next(err))
+    .catch((err) => next(err));
 });
 
 // app.get("/info", (_, response) => {
