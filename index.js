@@ -70,7 +70,6 @@ app.use(morgan(format));
 app.get("/api/persons", (_, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
-    mongoose.connection.close();
   });
   
 });
@@ -83,17 +82,11 @@ app.get("/api/persons/:id", (request, response) => {
     })
     .then((person) => {
       response.json(person);
-      mongoose.connection.close();
     })
     // TODO error handling - response.status(404).end();
 });
 
 app.post("/api/persons", (request, response) => {
-  let id;
-  while (!id) {
-    const tmpId = Math.floor(Math.random() * 100) + 1;
-    if (!data.find((person) => person.id === tmpId)) id = tmpId;
-  }
   if (!request.body.name) {
     return response.status(400).json({
       error: "name is missing",
@@ -112,18 +105,28 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
-    id,
-    ...request.body,
-  };
-  data = [...data, person];
-  response.json(person);
+  const person = new Person({
+    name: request.body.name,
+    phone: request.body.phone,
+  });
+
+  person.save().then((person) => {
+    console.log(`added ${person.name} number ${person.phone} to phonebook`);
+    response.json(person);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  data = data.filter((person) => person.id !== id);
-  response.status(204).end();
+  const id = request.params.id;
+  
+  Person
+    .deleteOne({
+      _id: ObjectId(id)
+    })
+    .then((person) => {
+      console.log('DELETED', person);
+      response.status(204).end();
+    })
 });
 
 app.get("/info", (_, response) => {
