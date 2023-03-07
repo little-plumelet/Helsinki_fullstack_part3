@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+// Person's import must be after donenv, thus env variables would be avaliable
 const Person = require("./models/person");
 
 const app = express();
